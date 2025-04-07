@@ -32,7 +32,8 @@ export default {
             },
             focusedIndex: null,
             showLogin: false,
-            showCart: false
+            showCart: false,
+            componentKey: 0,
         }
     },
     mounted() {
@@ -57,6 +58,7 @@ export default {
                 this.showLogin = false;
                 this.loading = false;
             }
+            window.location.reload();
         },
         getWeightUnitLabel(unitValue) {
             const unitMap = {
@@ -113,6 +115,10 @@ export default {
 
             // Update the cartItems array (this will ensure the UI updates)
             this.cartItems = updatedCart;
+        },
+        logout(){
+            this.$userManager.logout();
+            window.location.reload();
         }
     },
     computed: {
@@ -134,7 +140,15 @@ export default {
             return this.cartItems.reduce((sum, product) => {
                 return sum + (product.price * (product.quantity || 1));
             }, 0);
-        }
+        },
+        username(){
+            if(!this.$userManager.name){
+                return false;
+            }
+            else{
+                return this.$userManager.name;
+            }
+        },
     },
 };
 </script>
@@ -150,7 +164,12 @@ export default {
                             <img src="/static-stuff/panier.svg" alt="panier" width="48">
                         </template>
                     </CustomButton>
-                    <CustomButton text="Se Connecter" size="small" @click="showLogin = true" />
+                    
+                    <CustomButton v-if="!username" text="Se Connecter" size="small" @click="showLogin = true" />
+                    <div v-else style="display: flex; flex-direction: row; align-items: center;">
+                        <h1 style="color: #fff;">{{ username }}</h1>
+                        <CustomButton text="Deconnecter" size="small" @click="logout()" />
+                    </div> 
                 </div>
                 <span style="display: flex; flex-direction: row; max-width: 400px; gap: 80px;">
                     <div v-for="(item, i) in items" :key="i" class="nav-link" :class="{
@@ -178,14 +197,6 @@ export default {
                             style="width: 70px; height: 30px;text-transform: uppercase; font-size: smaller;"
                             @click="removeProduct(product.id)" />
                     </div>
-                    <!-- <div v-for="n in 5" :key="n" class="cart-item">
-                        <h2 style="font-size: 16px; color: #fff;">Name</h2>
-                        <p class="category">Categorie</p>
-                        <p class="price">9999</p>
-                        <p class="price">5</p>
-                        <CustomButton size="small" text="retirer"
-                            style="width: 70px; height: 30px;text-transform: uppercase; font-size: smaller;" />
-                    </div> -->
                 </div>
                 <div v-if="!cartItems" class="empty-cart">
                     <p style="font-size: 36px;">Votre panier est vide.</p>

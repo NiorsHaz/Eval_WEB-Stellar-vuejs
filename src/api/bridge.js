@@ -83,6 +83,10 @@ class Bridge {
     return this.get('orders');
   }
 
+  async getOrderBySocid(socid){
+    return this.get(`orders/orders?socid=${socid}`);
+  }
+
   async getProducts() {
     return this.get('products');
   }
