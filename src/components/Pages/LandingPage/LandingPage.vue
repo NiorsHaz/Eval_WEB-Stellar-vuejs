@@ -5,6 +5,7 @@ import FooterSection from "./FooterVue.vue";
 import NavBar from '../../Materials/NavBar.vue';
 import Link from "@/components/Materials/Link.vue";
 import CustomButton from "@/components/Materials/CustomButton.vue";
+import LoginPopup from "@/components/Materials/LoginPopup.vue";
 
 import { ref, onMounted, onBeforeUnmount } from "vue";
 
@@ -16,6 +17,7 @@ export default {
     NavBar,
     Link,
     CustomButton,
+    LoginPopup
   },
   data() {
     return {
@@ -25,6 +27,7 @@ export default {
         { text: 'Acceuil', href: '/' },
       ],
       focusedIndex: null,
+      showLogin: false,
     }
   },
   setup() {
@@ -58,7 +61,32 @@ export default {
         this.focusedIndex = null;
       }, 100);
     },
+    logout() {
+      this.$userManager.logout();
+      window.location.reload();
+    },
+    async handleLogin({ email, password }) {
+      console.log(email, password);
+
+      await this.$userManager.login(email, password);
+
+      if (this.$userManager.isLoggedIn()) {
+        this.showLogin = false;
+        this.loading = false;
+      }
+      window.location.reload();
+    },
   },
+  computed: {
+    username() {
+      if (!this.$userManager.name) {
+        return false;
+      }
+      else {
+        return this.$userManager.name;
+      }
+    },
+  }
 };
 </script>
 
@@ -66,7 +94,11 @@ export default {
   <transition name="slide-navbar">
     <NavBar v-if="showNav">
       <div style=" position: absolute; align-self: center; right: 20px; top: 25px;">
-        <CustomButton text="Se Connecter" size="small" />
+        <CustomButton v-if="!username" text="Se Connecter" size="small" @click="showLogin = true" />
+        <div v-else style="display: flex; flex-direction: row; align-items: center;">
+          <h1 style="color: #fff;">{{ username }}</h1>
+          <CustomButton text="Deconnecter" size="small" @click="logout()" />
+        </div>
       </div>
       <div v-for="(item, i) in items" :key="i" class="nav-link" :class="{
         focused: focusedIndex === i,
@@ -77,6 +109,7 @@ export default {
     </NavBar>
   </transition>
   <div class="page-container" id="Top">
+    <LoginPopup v-model="showLogin" @login="handleLogin" />
     <div style="z-index: 3;" ref="headerRef">
       <HeaderSection />
     </div>

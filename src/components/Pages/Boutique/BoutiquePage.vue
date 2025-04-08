@@ -116,7 +116,7 @@ export default {
             // Update the cartItems array (this will ensure the UI updates)
             this.cartItems = updatedCart;
         },
-        logout(){
+        logout() {
             this.$userManager.logout();
             window.location.reload();
         }
@@ -141,11 +141,11 @@ export default {
                 return sum + (product.price * (product.quantity || 1));
             }, 0);
         },
-        username(){
-            if(!this.$userManager.name){
+        username() {
+            if (!this.$userManager.name) {
                 return false;
             }
-            else{
+            else {
                 return this.$userManager.name;
             }
         },
@@ -164,12 +164,12 @@ export default {
                             <img src="/static-stuff/panier.svg" alt="panier" width="48">
                         </template>
                     </CustomButton>
-                    
+
                     <CustomButton v-if="!username" text="Se Connecter" size="small" @click="showLogin = true" />
                     <div v-else style="display: flex; flex-direction: row; align-items: center;">
                         <h1 style="color: #fff;">{{ username }}</h1>
                         <CustomButton text="Deconnecter" size="small" @click="logout()" />
-                    </div> 
+                    </div>
                 </div>
                 <span style="display: flex; flex-direction: row; max-width: 400px; gap: 80px;">
                     <div v-for="(item, i) in items" :key="i" class="nav-link" :class="{

@@ -6,11 +6,10 @@ import NavBar from '@/components/Materials/NavBar.vue';
 import CustomButton from '@/components/Materials/CustomButton.vue';
 import Link from '@/components/Materials/Link.vue';
 import { bridge } from '@/api/bridge';
-
+import FooterVue from '../LandingPage/FooterVue.vue';
 // Chart logic
 const chartData = ref([]);
 const chartData2 = ref([]);
-
 const getProductOrderStats = (orders) => {
     const stats = {};
     orders.forEach(order => {
@@ -24,39 +23,76 @@ const getProductOrderStats = (orders) => {
 
     return Object.entries(stats).map(([ref, total]) => ({ ref, total }));
 };
-const getValidOrdersStats = (orders) => {
-  const stats = {};
+function getValidOrdersStats(orders) {
+    const stats = {};
 
-  orders.forEach(order => {
-    const dateValidation = order.date_validation;
+    // Step 1: Get the earliest validated order to determine the start year
+    const earliestOrder = orders.reduce((earliest, order) => {
+        const dateValidation = order.date_validation;
+        if (dateValidation) {
+            return (earliest === null || dateValidation < earliest) ? dateValidation : earliest;
+        }
+        return earliest;
+    }, null);
 
-    // Only count the orders that have been validated (non-null date_validation)
-    if (dateValidation) {
-      // Convert the timestamp to a date string (optional: you can format it differently)
-      const dateKey = new Date(dateValidation * 1000).toLocaleDateString();
+    // If there's a valid order, use its year as the start date
+    const startDate = earliestOrder ? new Date(earliestOrder * 1000).getFullYear() : new Date().getFullYear();
 
-      if (!stats[dateKey]) {
-        stats[dateKey] = 0;
-      }
-      stats[dateKey]++;
-    }
-  });
+    // Step 2: Create the start array with the first year's start date
+    let result = [{ date: `1/1/${startDate}`, count: 0 }]; // Start with the first day of the first year
 
-  // Convert stats object to an array of {date, count}
-  return Object.entries(stats).map(([date, count]) => ({
-    date,
-    count
-  }));
+    // Step 3: Calculate the stats for valid orders
+    orders.forEach(order => {
+        const dateValidation = order.date_validation;
+
+        // Only count the orders that have been validated (non-null date_validation)
+        if (dateValidation) {
+            const dateKey = new Date(dateValidation * 1000).toLocaleDateString(); // Format the date
+
+            // Increment the count for each valid order
+            if (!stats[dateKey]) {
+                stats[dateKey] = 1;
+            } else {
+                stats[dateKey]++;
+            }
+        }
+    });
+
+    // Step 4: Merge start array with stats and return
+    result = result.concat(Object.entries(stats).map(([date, count]) => ({
+        date,
+        count
+    })));
+
+    return result;
 }
 
 onMounted(async () => {
-    const orders = await bridge.getOrder();
-    chartData.value = getProductOrderStats(orders);
-    const validorders = getValidOrdersStats(orders);
-    console.log(validorders);
-    chartData2.value = validorders;
+    const token = localStorage.getItem('token');
+    if (!token) {
+        showLogin = true;
+    }
+    else{
+        const orders = await bridge.getOrder();
+        chartData.value = getProductOrderStats(orders);
+        const validorders = getValidOrdersStats(orders);
+        console.log(validorders);
+        chartData2.value = validorders;
+    }
 });
 
+
+async function handleLogin({ email, password }) {
+    console.log(email, password);
+
+    await this.$userManager.login(email, password);
+
+    if (this.$userManager.isLoggedIn()) {
+        this.showLogin = false;
+        this.loading = false;
+    }
+    window.location.reload();
+}
 // NavBar logic
 const items = [
     { text: 'Acceuil', href: '/' },
@@ -66,8 +102,8 @@ const items = [
 
 const focusedIndex = ref(null);
 const showLogin = ref(false);
-const showCart = ref(false);
-const username = ref(localStorage.getItem('username') || '');
+const username = ref(localStorage.getItem('stellar_username'));
+console.log(username.value);
 
 const logout = () => {
     localStorage.removeItem('username');
@@ -80,6 +116,7 @@ const handleshowCart = () => {
 </script>
 
 <template>
+    <LoginPopup v-model="showLogin" @login="handleLogin" />
     <header>
         <NavBar style="position: relative; display: flex; justify-content: center; flex-shrink: 0; gap: 30%;">
             <div style="display: flex; flex-direction: row;">
@@ -110,17 +147,17 @@ const handleshowCart = () => {
     <main>
         <BoxContainer class="chart-container">
             <h1 class="title">Produit totale commander</h1>
-            <ChartComponent v-if="chartData.length" :data="chartData" xKey="ref" yKey="total" chartType="bar" />
+            <ChartComponent v-if="chartData.length" :data="chartData" xKey="ref" yKey="total" chartType="bar" labelText="Quantité Commander" />
         </BoxContainer>
 
         <BoxContainer class="chart-container">
             <h1 class="title">Commande Valider</h1>
-            <ChartComponent v-if="chartData2.length" :data="chartData2" xKey="date" yKey="count" chartType="line"/>
+            <ChartComponent v-if="chartData2.length" :data="chartData2" xKey="date" yKey="count" chartType="line" labelText="commandes facturé"/>
         </BoxContainer>
     </main>
 
     <footer>
-
+        <FooterVue />
     </footer>
 </template>
 
@@ -133,9 +170,11 @@ main {
 
     flex: 1;
 
+    gap: 15px;
+
     margin: 15px;
 
-    padding: 15px 15px;
+    padding: 15px;
 }
 
 .chart-container {

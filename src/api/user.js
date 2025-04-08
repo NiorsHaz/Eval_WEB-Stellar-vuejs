@@ -85,6 +85,7 @@ class UserManager {
 
       const orderResponse = await bridge.createOrder(orderData); 
       console.log('Order placed successfully:', orderResponse);
+      this.clearBasket();
       return orderResponse;
     } catch (error) {
       // console.error('Error placing order:', error);

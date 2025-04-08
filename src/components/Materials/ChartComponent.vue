@@ -14,7 +14,7 @@ import { Bar, Line } from 'vue-chartjs';
 
 ChartJS.register(Title, Tooltip, Legend, BarElement, LineElement, PointElement, CategoryScale, LinearScale);  // Register PointElement
 
-const { data, xKey, yKey, chartType } = defineProps({
+const { data, xKey, yKey, chartType, labelText } = defineProps({
   data: Array,
   xKey: String,
   yKey: String,
@@ -22,16 +22,17 @@ const { data, xKey, yKey, chartType } = defineProps({
     type: String,
     default: 'bar', // Default is bar chart
     validator: value => ['bar', 'line'].includes(value), // Allow only bar or line
-  }
+  },
+  labelText: String
 });
 
 const chartData = {
   labels: data.map(d => d[xKey]),
   datasets: [
     {
-      label: 'Quantité commandée',
+      label: labelText || 'Default Label',
       backgroundColor: '#D6D6D6D0',
-      borderColor: '#388E3C',
+      borderColor: '#D6D6D6D0',
       borderWidth: 2,                  // Border thickness
       hoverBackgroundColor: '#66BB6A', // On hover fill
       hoverBorderColor: '#2E7D32',
