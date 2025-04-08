@@ -20,7 +20,7 @@ export default {
   data() {
     return {
       items: [
-        { text: 'DashBoard', href: '#' },
+        { text: 'DashBoard', href: '/Dashboard' },
         { text: 'Boutique', href: '/boutique' },
         { text: 'Acceuil', href: '/' },
       ],

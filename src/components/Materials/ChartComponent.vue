@@ -1,85 +1,100 @@
-<script>
+<script setup>
 import {
-  LineChart,
-  Line,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
+  Chart as ChartJS,
+  Title,
   Tooltip,
-  CartesianGrid,
-  ResponsiveContainer
-} from 'recharts';
+  Legend,
+  BarElement,
+  LineElement,
+  PointElement,  // Import PointElement
+  CategoryScale,
+  LinearScale
+} from 'chart.js';
+import { Bar, Line } from 'vue-chartjs';
 
-export default {
-  props: {
-    type: {
-      type: String,
-      default: 'line',
-      validator: value => ['line', 'bar'].includes(value)
+ChartJS.register(Title, Tooltip, Legend, BarElement, LineElement, PointElement, CategoryScale, LinearScale);  // Register PointElement
+
+const { data, xKey, yKey, chartType } = defineProps({
+  data: Array,
+  xKey: String,
+  yKey: String,
+  chartType: {
+    type: String,
+    default: 'bar', // Default is bar chart
+    validator: value => ['bar', 'line'].includes(value), // Allow only bar or line
+  }
+});
+
+const chartData = {
+  labels: data.map(d => d[xKey]),
+  datasets: [
+    {
+      label: 'Quantité commandée',
+      backgroundColor: '#D6D6D6D0',
+      borderColor: '#388E3C',
+      borderWidth: 2,                  // Border thickness
+      hoverBackgroundColor: '#66BB6A', // On hover fill
+      hoverBorderColor: '#2E7D32',
+      data: data.map(d => d[yKey]),
+    }
+  ]
+};
+
+const chartOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  scales: {
+    x: {
+      ticks: {
+        color: '#FFFFFF', // White axis labels
+        font: {
+          size: 14,
+          weight: 'bold',
+        }
+      },
+      grid: {
+        color: '#444444', // Dark grid lines
+      }
     },
-    data: {
-      type: Array,
-      required: true
-    },
-    xKey: {
-      type: String,
-      required: true
-    },
-    yKey: {
-      type: String,
-      required: true
+    y: {
+      ticks: {
+        color: '#FFFFFF',
+        font: {
+          size: 14,
+          weight: 'bold',
+        }
+      },
+      grid: {
+        color: '#444444',
+      }
     }
   },
-  components: {
-    LineChart,
-    Line,
-    BarChart,
-    Bar,
-    XAxis,
-    YAxis,
-    Tooltip,
-    CartesianGrid,
-    ResponsiveContainer
+  plugins: {
+    legend: {
+      labels: {
+        color: '#FFFFFF',
+        font: {
+          size: 16,
+          weight: 'bold'
+        }
+      }
+    },
+    tooltip: {
+      backgroundColor: '#222222',
+      titleColor: '#FFFFFF',
+      bodyColor: '#CCCCCC',
+    }
   }
 };
 </script>
 
 <template>
-  <div class="chart-container">
-    <ResponsiveContainer width="100%" height="300">
-      <component
-        :is="type === 'line' ? 'LineChart' : 'BarChart'"
-        :data="data"
-        margin="{ top: 10, right: 30, left: 0, bottom: 0 }"
-      >
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis :dataKey="xKey" />
-        <YAxis />
-        <Tooltip />
-        <Line
-          v-if="type === 'line'"
-          :type="'monotone'"
-          :dataKey="yKey"
-          stroke="#8884d8"
-          stroke-width="3"
-          dot
-        />
-        <Bar
-          v-else
-          :dataKey="yKey"
-          fill="#82ca9d"
-          bar-size="30"
-        />
-      </component>
-    </ResponsiveContainer>
+  <div style="height: 300px; width: 100%;">
+    <!-- Dynamically choose between Bar and Line chart based on chartType prop -->
+    <component
+      :is="chartType === 'bar' ? Bar : Line"
+      :data="chartData"
+      :options="chartOptions"
+    />
   </div>
 </template>
-
-<style scoped>
-.chart-container {
-  width: 100%;
-  max-width: 1000px;
-  margin: auto;
-}
-</style>

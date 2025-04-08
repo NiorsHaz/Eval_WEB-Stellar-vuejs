@@ -79,11 +79,12 @@ class Bridge {
     }
   }
 
-  async getOrder(){
+  async getOrder() {
     return this.get('orders');
   }
 
-  async getOrderBySocid(socid){
+
+  async getOrderBySocid(socid) {
     return this.get(`orders/orders?socid=${socid}`);
   }
 
@@ -108,11 +109,11 @@ class Bridge {
       method: 'GET',
       headers: this.getHeaders()
     });
-  
+
     const userData = await res.json();
-  
+
     const foundUser = userData.find(user => user.login === localStorage.getItem('stellar_username'));
-  
+
     if (foundUser) {
       console.log("✅ Found user:", foundUser.ref);
       return foundUser.ref;
@@ -121,7 +122,7 @@ class Bridge {
       return null;
     }
   }
-  
+
 
 }
 

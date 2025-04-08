@@ -24,7 +24,7 @@ export default {
             items: [
                 { text: 'Acceuil', href: '/' },
                 { text: 'Boutique', href: '/boutique' },
-                { text: 'DashBoard', href: '#' },
+                { text: 'DashBoard', href: '/dashboard' },
             ],
             cartItems: {
                 type: Array,
