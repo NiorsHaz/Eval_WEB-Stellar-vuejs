@@ -11,6 +11,8 @@ import FooterVue from '../LandingPage/FooterVue.vue';
 const chartData = ref([]);
 const chartData2 = ref([]);
 const getProductOrderStats = (orders) => {
+    let result = [{ ref: 'SP', total: 0 }];
+
     const stats = {};
     orders.forEach(order => {
         (order.lines || []).forEach(line => {
@@ -20,8 +22,14 @@ const getProductOrderStats = (orders) => {
             stats[ref] += qty;
         });
     });
+    result = result.concat(Object.entries(stats).map(([ref, total]) => ({
+        ref,
+        total
+    })));
 
-    return Object.entries(stats).map(([ref, total]) => ({ ref, total }));
+    return result;
+
+    // return Object.entries(stats).map(([ref, total]) => ({ ref, total }));
 };
 function getValidOrdersStats(orders) {
     const stats = {};

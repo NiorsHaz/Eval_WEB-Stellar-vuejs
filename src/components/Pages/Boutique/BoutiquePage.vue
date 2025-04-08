@@ -62,6 +62,7 @@ export default {
         },
         getWeightUnitLabel(unitValue) {
             const unitMap = {
+                '-2': 'dag',
                 0: 'kg',
                 '-3': 'g',
                 '-6': 'mg',
