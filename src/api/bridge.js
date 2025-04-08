@@ -1,3 +1,5 @@
+import { ref } from "vue";
+
 // src/api/bridge.js
 const API_URL = "http://localhost/Stellar/api/index.php";
 
@@ -94,6 +96,30 @@ class Bridge {
 
   async getProduct(id) {
     return this.get(`products/${id}`);
+  }
+
+  async updateRatingProduct(ref, label, rating){
+    const orderData = {
+      array_options:{
+        options_temp_rating: rating,
+      }
+    };
+    const res = await fetch(`${API_URL}/products/${ref}`, {
+      method: 'PUT',
+      headers: this.getHeaders(),
+      body: JSON.stringify(orderData)
+    });
+
+    const text = await res.text();
+
+    try {
+      return JSON.parse(text);
+    } catch (err) {
+      // console.error("❌ Raw response that failed to parse:", text);  
+      throw new SyntaxError("Non-JSON response");
+    }
+    
+    // return this.post(`products?id=${id}`, orderData);
   }
 
   async createThirdParty(userData) {

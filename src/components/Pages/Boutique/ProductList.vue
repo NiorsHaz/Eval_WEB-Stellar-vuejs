@@ -10,11 +10,6 @@ export default {
     },
     data() {
         return {
-            // products: [
-            //     { ref_produit: 1, libelle: "Stellar Grip", categorie: "Gants", prix_vente: 850, nature: "Gant haute adherence pour un controle parfait", image: "/static-stuff/gloves.png" },
-            //     { ref_produit: 2, libelle: "Stellar E-Ride", categorie: "Velo", prix_vente: 875, nature: "Le vtt electrique aliant puissance et autonomie", image: "/static-stuff/ride.png" },
-            //     { ref_produit: 3, libelle: "Stellar Shield", categorie: "Casque", prix_vente: 900, nature: "Casque ultra-leger avec protection avancee", image: "/static-stuff/shield.png" },
-            // ],
             selectedProduct: null,
             showDetail: false,
             products: Array(0),
@@ -82,7 +77,12 @@ export default {
                 <h1 class="item-name">{{ product.label }}</h1>
                 <span>{{ formatNumber(product.price) }}</span>
                 <div class="category-box">
-                    <p class="category">{{ product.categorie }}</p>
+                    <p v-if="product.array_options['options_rating'] > 0" class="category">{{ formatNumber(product.array_options['options_rating']) }}
+                        <img :src="'/static-stuff/icon_rating.svg'" :alt="product.libelle" />
+                    </p>
+                    <p v-else class="category">
+                        No rating
+                    </p>
                 </div>
             </div>
         </BoxContainer>

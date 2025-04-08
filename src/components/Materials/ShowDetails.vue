@@ -1,5 +1,6 @@
 <script>
 import CustomButton from './CustomButton.vue';
+import {bridge} from '@/api/bridge';
 
 export default {
     components: {
@@ -8,6 +9,7 @@ export default {
     data() {
         return {
             quantity: 1,
+            rating: null,
         }
     },
     props: {
@@ -65,6 +67,9 @@ export default {
 
             const formatted = formatter.format(value);
             return unit ? `${formatted} ${unit}` : formatted;
+        },
+        async handleRanting(){
+            await bridge.updateRatingProduct(this.product.id, this.product.label, this.rating)
         }
     },
     computed: {
@@ -84,10 +89,22 @@ export default {
                 <div class="text-section">
                     <h1 class="name">{{ product?.label }}</h1>
                     <div class="category-box">
-                        <p class="category">{{ formatNumber(product.weight) }} {{ getWeightUnitLabel(product.weight_units) }}</p>
+                        <p class="category">{{ formatNumber(product.weight) }} {{
+                            getWeightUnitLabel(product.weight_units) }}</p>
+                        <p v-if="product.array_options['options_rating'] > 0" class="category">{{
+                            formatNumber(product.array_options['options_rating']) }}
+                            <img :src="'/static-stuff/icon_rating.svg'" :alt="product.libelle" />
+                        </p>
+                        <p v-else class="category">
+                            No rating
+                        </p>
+                    </div>
+                    <div>
+                        <input type="number" v-model="rating" min="0" max="5">
+                        <button @click="handleRanting">Submit rating</button>
                     </div>
                     <p class="description">{{ product?.nature }}</p>
-                    <p class="price">{{ formatNumber(product?.price)}}</p>
+                    <p class="price">{{ formatNumber(product?.price) }}</p>
                     <div class="chooser">
                         <button class="arrow" @click="decreasequantity">
                             < </button>
