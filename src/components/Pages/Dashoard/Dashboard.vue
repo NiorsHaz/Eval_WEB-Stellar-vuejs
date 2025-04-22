@@ -78,7 +78,7 @@ function getValidOrdersStats(orders) {
 onMounted(async () => {
     const token = localStorage.getItem('token');
     if (!token) {
-        showLogin = true;
+        showLogin.value = true;
     }
     else{
         const orders = await bridge.getOrder();
@@ -106,6 +106,7 @@ const items = [
     { text: 'Acceuil', href: '/' },
     { text: 'Boutique', href: '/boutique' },
     { text: 'DashBoard', href: '/dashboard' },
+    { text: 'Facture', href: '/facture' },
 ];
 
 const focusedIndex = ref(null);

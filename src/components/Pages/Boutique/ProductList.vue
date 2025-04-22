@@ -75,10 +75,10 @@ export default {
             </div>
             <div class="info">
                 <h1 class="item-name">{{ product.label }}</h1>
-                <span>{{ formatNumber(product.price) }}</span>
+                <span>Ar. {{ formatNumber(product.price) }}</span>
                 <div class="category-box">
                     <p v-if="product.array_options['options_rating'] > 0" class="category">{{ formatNumber(product.array_options['options_rating']) }}
-                        <img :src="'/static-stuff/icon_rating.svg'" :alt="product.libelle" />
+                        <img :src="'/static-stuff/icon_rating_fill_display.svg'" :alt="product.libelle" />
                     </p>
                     <p v-else class="category">
                         No rating
@@ -131,6 +131,8 @@ export default {
     align-content: center;
 
     width: 500px;
+    min-height: 600px;
+    height: 620px;
     border-color: rgba(198, 204, 208, 0.2);
     box-shadow: 0px 0px 10px rgba(198, 204, 208, 0.0);
 

@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "chart.js": "^4.4.8",
+    "html2pdf.js": "^0.10.3",
     "stellar": "file:",
     "vue": "^3.5.13",
     "vue-chartjs": "^5.3.2",

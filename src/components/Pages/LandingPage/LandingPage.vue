@@ -22,6 +22,7 @@ export default {
   data() {
     return {
       items: [
+        { text: 'Facture', href: '/facture' },
         { text: 'DashBoard', href: '/Dashboard' },
         { text: 'Boutique', href: '/boutique' },
         { text: 'Acceuil', href: '/' },

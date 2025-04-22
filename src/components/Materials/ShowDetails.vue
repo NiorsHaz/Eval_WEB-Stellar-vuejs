@@ -1,15 +1,17 @@
 <script>
 import CustomButton from './CustomButton.vue';
+import Rating from './Rating.vue';
 import {bridge} from '@/api/bridge';
 
 export default {
     components: {
         CustomButton,
+        Rating
     },
     data() {
         return {
             quantity: 1,
-            rating: null,
+            rating: 0,
         }
     },
     props: {
@@ -69,7 +71,24 @@ export default {
             return unit ? `${formatted} ${unit}` : formatted;
         },
         async handleRanting(){
-            await bridge.updateRatingProduct(this.product.id, this.product.label, this.rating)
+            var finalvalue = 0;
+            if(this.product.array_options['options_rating'] > 0){
+                finalvalue = (this.product.array_options['options_rating']+ this.rating)/2;
+            }
+            else{
+                finalvalue = this.rating;
+            }
+            // console.log(finalvalue);
+            try{
+                await bridge.updateRatingProduct(this.product.id, this.product.label, finalvalue);
+            }
+            catch(err){
+
+            }
+            finally{
+                window.location.reload();
+            }
+                
         }
     },
     computed: {
@@ -91,20 +110,21 @@ export default {
                     <div class="category-box">
                         <p class="category">{{ formatNumber(product.weight) }} {{
                             getWeightUnitLabel(product.weight_units) }}</p>
-                        <p v-if="product.array_options['options_rating'] > 0" class="category">{{
+                        <p v-if="product.array_options['options_rating'] > 0" class="category" style="display: flex; flex-direction: row;">{{
                             formatNumber(product.array_options['options_rating']) }}
-                            <img :src="'/static-stuff/icon_rating.svg'" :alt="product.libelle" />
+                            <img :src="'/static-stuff/icon_rating_fill_display.svg'" :alt="product.libelle" />
                         </p>
                         <p v-else class="category">
                             No rating
                         </p>
                     </div>
-                    <div>
-                        <input type="number" v-model="rating" min="0" max="5">
-                        <button @click="handleRanting">Submit rating</button>
+                    <div class="give-rating">
+                        <!-- <input type="number" v-model="rating" min="0" max="5"> -->
+                        <Rating v-model="rating"/>
+                        <button class="submit-rating" @click="handleRanting">Noter</button>
                     </div>
                     <p class="description">{{ product?.nature }}</p>
-                    <p class="price">{{ formatNumber(product?.price) }}</p>
+                    <p class="price">Ar. {{ formatNumber(product?.price) }}</p>
                     <div class="chooser">
                         <button class="arrow" @click="decreasequantity">
                             < </button>
@@ -134,6 +154,13 @@ export default {
     z-index: 1000;
 }
 
+.give-rating {
+    display: flex;
+    flex-direction: column;
+
+    gap: 15px;
+}
+
 .detail-container {
     background: #292929;
     width: 100%;
@@ -150,6 +177,21 @@ export default {
 
     position: relative;
     gap: 30%;
+}
+
+.submit-rating {
+    /* position: absolute; */
+    /* top: 20px; */
+    /* right: 30px; */
+    font-size: 16px;
+    justify-self: center;
+    align-self: center;
+
+    padding: 5px 15px;
+    border-radius: 15px;
+    cursor: pointer;
+
+    color: #000;
 }
 
 .close-button {

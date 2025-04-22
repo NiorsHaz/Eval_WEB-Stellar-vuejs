@@ -25,6 +25,7 @@ export default {
                 { text: 'Acceuil', href: '/' },
                 { text: 'Boutique', href: '/boutique' },
                 { text: 'DashBoard', href: '/dashboard' },
+                { text: 'Facture', href: '/facture' },
             ],
             cartItems: {
                 type: Array,

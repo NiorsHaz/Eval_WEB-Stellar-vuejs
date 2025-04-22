@@ -86,6 +86,10 @@ class Bridge {
   }
 
 
+  async getInvoice() {
+    return this.get('invoices');
+  }
+
   async getOrderBySocid(socid) {
     return this.get(`orders/orders?socid=${socid}`);
   }
@@ -98,10 +102,10 @@ class Bridge {
     return this.get(`products/${id}`);
   }
 
-  async updateRatingProduct(ref, label, rating){
+  async updateRatingProduct(ref, label, rating) {
     const orderData = {
-      array_options:{
-        options_temp_rating: rating,
+      array_options: {
+        options_rating: rating,
       }
     };
     const res = await fetch(`${API_URL}/products/${ref}`, {
@@ -111,14 +115,15 @@ class Bridge {
     });
 
     const text = await res.text();
-
+    // return true;
+    // return JSON.parse(text);
     try {
       return JSON.parse(text);
     } catch (err) {
-      // console.error("❌ Raw response that failed to parse:", text);  
+      // window.location.reload();
       throw new SyntaxError("Non-JSON response");
     }
-    
+
     // return this.post(`products?id=${id}`, orderData);
   }
 
